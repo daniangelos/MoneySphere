@@ -1,13 +1,15 @@
 package repositories
 
+import "gorm.io/gorm"
+
 type RepositoryContainer struct {
 	ClientRepository      IClientRepository
 	TransactionRepository ITransactionRepository
 }
 
-func NewRepositoryContainer() RepositoryContainer {
+func NewRepositoryContainer(dbConn *gorm.DB) RepositoryContainer {
 	return RepositoryContainer{
-		ClientRepository:      NewClientRepository(),
-		TransactionRepository: NewTransactionRepository(),
+		ClientRepository:      NewClientRepository(dbConn),
+		TransactionRepository: NewTransactionRepository(dbConn),
 	}
 }

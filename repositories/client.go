@@ -1,12 +1,18 @@
 package repositories
 
-import "github.com/MoneySphere/models"
+import (
+	"github.com/MoneySphere/models"
+	"gorm.io/gorm"
+)
 
 type ClientRepository struct {
+	dbConn *gorm.DB
 }
 
-func NewClientRepository() *ClientRepository {
-	return &ClientRepository{}
+func NewClientRepository(dbConn *gorm.DB) *ClientRepository {
+	return &ClientRepository{
+		dbConn: dbConn,
+	}
 }
 
 func (cr *ClientRepository) GetClientByID(id int) (*models.Client, error) {

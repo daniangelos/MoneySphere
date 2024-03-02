@@ -1,12 +1,18 @@
 package repositories
 
-import "github.com/MoneySphere/models"
+import (
+	"github.com/MoneySphere/models"
+	"gorm.io/gorm"
+)
 
 type TransactionRepository struct {
+	dbConn *gorm.DB
 }
 
-func NewTransactionRepository() *TransactionRepository {
-	return &TransactionRepository{}
+func NewTransactionRepository(dbConn *gorm.DB) *TransactionRepository {
+	return &TransactionRepository{
+		dbConn: dbConn,
+	}
 }
 
 func (tr *TransactionRepository) CreateTransaction(clientID int, value int, transactionType string, description string) (*models.Transaction, error) {
