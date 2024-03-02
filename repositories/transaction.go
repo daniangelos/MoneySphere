@@ -16,9 +16,22 @@ func NewTransactionRepository(dbConn *gorm.DB) *TransactionRepository {
 }
 
 func (tr *TransactionRepository) CreateTransaction(clientID int, value int, transactionType string, description string) (*models.Transaction, error) {
-	return nil, nil
+	transaction := models.Transaction{
+		ClientID:               clientID,
+		TransactionValue:       value,
+		TransactionType:        transactionType,
+		TransactionDescription: description,
+	}
+
+	err := tr.dbConn.Create(&transaction).Error
+
+	return &transaction, err
 }
 
-func (tr *TransactionRepository) GetTransactionsByClientID() ([]*models.Transaction, error) {
-	return nil, nil
+func (tr *TransactionRepository) GetTransactionsByClientID(clientID int) ([]*models.Transaction, error) {
+	transactions := []*models.Transaction{}
+
+	err := tr.dbConn.Find(&transactions).Where("client_id = ?", clientID).Error
+
+	return transactions, err
 }

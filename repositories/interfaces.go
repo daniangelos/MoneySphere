@@ -9,5 +9,5 @@ type IClientRepository interface {
 
 type ITransactionRepository interface {
 	CreateTransaction(clientID int, value int, transactionType string, description string) (*models.Transaction, error)
-	GetTransactionsByClientID() ([]*models.Transaction, error)
+	GetTransactionsByClientID(clientID int) ([]*models.Transaction, error)
 }
