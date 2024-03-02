@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"fmt"
+
 	"github.com/MoneySphere/dtos"
 	"github.com/MoneySphere/models"
 	"github.com/MoneySphere/repositories"
@@ -23,5 +25,13 @@ func NewClientController(repositoryContainer repositories.RepositoryContainer) *
 }
 
 func (cc *ClientController) CreateClientTransaction(id int, transactionData dtos.TransactionCreateRequest) (*models.Transaction, error) {
+	client, err := cc.clientRepository.GetClientByID(id)
+	if err != nil {
+		fmt.Println("failed to get client from db", err)
+		return nil, err
+	}
+
+	err = client.UpdateBalance(transactionData.Type, transactionData.Value)
+
 	return nil, nil
 }

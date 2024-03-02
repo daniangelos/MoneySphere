@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/MoneySphere/controllers"
 	"github.com/MoneySphere/dtos"
@@ -20,14 +21,31 @@ func NewClientHandler(controllerContainer controllers.ControllerContainer) *Clie
 }
 
 func (ch *ClientHandler) CreateClientTransaction(c *gin.Context) {
-	id, _ := c.Params.Get("id")
+	idText, _ := c.Params.Get("id")
+	id, err := strconv.Atoi(idText)
+	if err != nil {
+		fmt.Println("id not a number")
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
 	var body dtos.TransactionCreateRequest
 
 	if err := c.BindJSON(&body); err != nil {
 		return
 	}
 
-	fmt.Println(body)
+	_, err = ch.clientController.CreateClientTransaction(id, body)
+
+	if err != nil {
+		fmt.Println("client transaction creation error")
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": id,
