@@ -13,19 +13,17 @@ type IClientController interface {
 }
 
 type ClientController struct {
-	clientRepository      repositories.IClientRepository
-	transactionRepository repositories.ITransactionRepository
+	repoContainer repositories.RepositoryContainer
 }
 
 func NewClientController(repositoryContainer repositories.RepositoryContainer) *ClientController {
 	return &ClientController{
-		clientRepository:      repositoryContainer.ClientRepository,
-		transactionRepository: repositoryContainer.TransactionRepository,
+		repoContainer: repositoryContainer,
 	}
 }
 
 func (cc *ClientController) CreateClientTransaction(id int, transactionData dtos.TransactionCreateRequest) (*models.Transaction, error) {
-	client, err := cc.clientRepository.GetClientByID(id)
+	client, err := cc.repoContainer.ClientRepository.GetClientByID(id)
 	if err != nil {
 		fmt.Println("failed to get client from db", err)
 		return nil, err
@@ -36,12 +34,12 @@ func (cc *ClientController) CreateClientTransaction(id int, transactionData dtos
 		return nil, err
 	}
 
-	err = cc.clientRepository.UpdateClientBalance(id, client.Balance)
+	err = cc.repoContainer.ClientRepository.UpdateClientBalance(id, client.Balance)
 	if err != nil {
 		return nil, err
 	}
 
-	transaction, err := cc.transactionRepository.CreateTransaction(id, transactionData.Value, transactionData.Type, transactionData.Description)
+	transaction, err := cc.repoContainer.TransactionRepository.CreateTransaction(id, transactionData.Value, transactionData.Type, transactionData.Description)
 	if err != nil {
 		return nil, err
 	}
