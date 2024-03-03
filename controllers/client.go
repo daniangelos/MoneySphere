@@ -34,12 +34,20 @@ func (cc *ClientController) CreateClientTransaction(id int, transactionData dtos
 		return nil, err
 	}
 
-	err = cc.repoContainer.ClientRepository.UpdateClientBalance(id, client.Balance)
-	if err != nil {
-		return nil, err
-	}
+	var transaction *models.Transaction
+	err = cc.repoContainer.WithDBTransaction(func(txContainer repositories.RepositoryContainer) error {
+		err = txContainer.ClientRepository.UpdateClientBalance(id, client.Balance)
+		if err != nil {
+			return err
+		}
 
-	transaction, err := cc.repoContainer.TransactionRepository.CreateTransaction(id, transactionData.Value, transactionData.Type, transactionData.Description)
+		transaction, err = txContainer.TransactionRepository.CreateTransaction(id, transactionData.Value, transactionData.Type, transactionData.Description)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
 	if err != nil {
 		return nil, err
 	}
