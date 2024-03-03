@@ -6,7 +6,7 @@ CREATE TABLE clients (
 );
 
 CREATE TABLE transactions (
-    id int,
+    id SERIAL,
     client_id int,
     transaction_value int,
     transaction_type varchar(1),

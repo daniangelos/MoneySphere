@@ -2,7 +2,10 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
+	"os"
+	"time"
 
 	"github.com/MoneySphere/config"
 	"github.com/MoneySphere/controllers"
@@ -11,6 +14,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 func main() {
@@ -47,11 +51,24 @@ func main() {
 }
 
 func initDB(dbConfig config.DBConfig) (*gorm.DB, error) {
+	newLogger := logger.New(
+		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
+		logger.Config{
+			SlowThreshold:             time.Second, // Slow SQL threshold
+			LogLevel:                  logger.Info, // Log level
+			IgnoreRecordNotFoundError: true,        // Ignore ErrRecordNotFound error for logger
+			ParameterizedQueries:      true,        // Don't include params in the SQL log
+			Colorful:                  false,       // Disable color
+		},
+	)
+
 	dsn := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=disable", dbConfig.Host, dbConfig.User, dbConfig.Password, dbConfig.Name, dbConfig.Port)
 	db, err := gorm.Open(postgres.New(postgres.Config{
 		DSN:                  dsn,
 		PreferSimpleProtocol: true, // disables implicit prepared statement usage
-	}), &gorm.Config{})
+	}), &gorm.Config{
+		Logger: newLogger,
+	})
 
 	if err != nil {
 		return nil, err

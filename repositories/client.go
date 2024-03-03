@@ -24,5 +24,5 @@ func (cr *ClientRepository) GetClientByID(id int) (*models.Client, error) {
 }
 
 func (cr *ClientRepository) UpdateClientBalance(id int, newBalance int) error {
-	return cr.dbConn.Update("balance", newBalance).Where("id = ?", id).Error
+	return cr.dbConn.Model(&models.Client{}).Where("id = ?", id).Update("balance", newBalance).Error
 }
