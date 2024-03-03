@@ -15,7 +15,8 @@ type Client struct {
 func (c *Client) UpdateBalance(transactionType constants.TypeEnum, value int) error {
 	switch transactionType {
 	case constants.CreditType:
-		return c.creditTransaction(value)
+		c.creditTransaction(value)
+		return nil
 	case constants.DebitType:
 		return c.debitTransaction(value)
 	default:
@@ -23,10 +24,14 @@ func (c *Client) UpdateBalance(transactionType constants.TypeEnum, value int) er
 	}
 }
 
-func (c *Client) creditTransaction(value int) error {
-	return nil
+func (c *Client) creditTransaction(value int) {
+	c.Balance += value
 }
 
 func (c *Client) debitTransaction(value int) error {
+	if c.Balance-value < -c.AccountLimit {
+		return constants.ErrNotEnoughBalance
+	}
+	c.Balance -= value
 	return nil
 }

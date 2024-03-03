@@ -1,6 +1,9 @@
 package repositories
 
-import "github.com/MoneySphere/models"
+import (
+	"github.com/MoneySphere/constants"
+	"github.com/MoneySphere/models"
+)
 
 type IClientRepository interface {
 	GetClientByID(id int) (*models.Client, error)
@@ -8,6 +11,6 @@ type IClientRepository interface {
 }
 
 type ITransactionRepository interface {
-	CreateTransaction(clientID int, value int, transactionType string, description string) (*models.Transaction, error)
+	CreateTransaction(clientID int, value int, transactionType constants.TypeEnum, description string) (*models.Transaction, error)
 	GetTransactionsByClientID(clientID int) ([]*models.Transaction, error)
 }

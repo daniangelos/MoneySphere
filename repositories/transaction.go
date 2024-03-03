@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"github.com/MoneySphere/constants"
 	"github.com/MoneySphere/models"
 	"gorm.io/gorm"
 )
@@ -15,7 +16,7 @@ func NewTransactionRepository(dbConn *gorm.DB) *TransactionRepository {
 	}
 }
 
-func (tr *TransactionRepository) CreateTransaction(clientID int, value int, transactionType string, description string) (*models.Transaction, error) {
+func (tr *TransactionRepository) CreateTransaction(clientID int, value int, transactionType constants.TypeEnum, description string) (*models.Transaction, error) {
 	transaction := models.Transaction{
 		ClientID:               clientID,
 		TransactionValue:       value,

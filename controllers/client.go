@@ -32,6 +32,19 @@ func (cc *ClientController) CreateClientTransaction(id int, transactionData dtos
 	}
 
 	err = client.UpdateBalance(transactionData.Type, transactionData.Value)
+	if err != nil {
+		return nil, err
+	}
 
-	return nil, nil
+	err = cc.clientRepository.UpdateClientBalance(id, client.Balance)
+	if err != nil {
+		return nil, err
+	}
+
+	transaction, err := cc.transactionRepository.CreateTransaction(id, transactionData.Value, transactionData.Type, transactionData.Description)
+	if err != nil {
+		return nil, err
+	}
+
+	return transaction, nil
 }
