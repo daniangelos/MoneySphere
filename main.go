@@ -46,6 +46,7 @@ func main() {
 	clientHandler := handlerContainer.ClientHandler
 
 	router.POST("/clientes/:id/transacoes", clientHandler.CreateClientTransaction)
+	router.GET("/clientes/:id/extrato", clientHandler.GetClientTransactions)
 
 	router.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }

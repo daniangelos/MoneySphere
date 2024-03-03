@@ -37,7 +37,7 @@ func (ch *ClientHandler) CreateClientTransaction(c *gin.Context) {
 		return
 	}
 
-	_, err = ch.clientController.CreateClientTransaction(id, body)
+	transaction, err := ch.clientController.CreateClientTransaction(id, body)
 
 	if err != nil {
 		fmt.Println("client transaction creation error")
@@ -48,6 +48,29 @@ func (ch *ClientHandler) CreateClientTransaction(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": id,
+		"data": transaction,
 	})
+}
+
+func (ch *ClientHandler) GetClientTransactions(c *gin.Context) {
+	idText, _ := c.Params.Get("id")
+	id, err := strconv.Atoi(idText)
+	if err != nil {
+		fmt.Println("id not a number")
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	response, err := ch.clientController.GetClientTransactions(id)
+	if err != nil {
+		fmt.Println("failed to get client transactions")
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, response)
 }

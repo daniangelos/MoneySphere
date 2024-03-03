@@ -10,6 +10,7 @@ import (
 
 type IClientController interface {
 	CreateClientTransaction(id int, transactionData dtos.TransactionCreateRequest) (*models.Transaction, error)
+	GetClientTransactions(id int) (*dtos.GetClientTransactionsResponse, error)
 }
 
 type ClientController struct {
@@ -53,4 +54,21 @@ func (cc *ClientController) CreateClientTransaction(id int, transactionData dtos
 	}
 
 	return transaction, nil
+}
+
+func (cc *ClientController) GetClientTransactions(id int) (*dtos.GetClientTransactionsResponse, error) {
+	client, err := cc.repoContainer.ClientRepository.GetClientByID(id)
+	if err != nil {
+		fmt.Println("failed to get client from db", err)
+		return nil, err
+	}
+
+	transactions, err := cc.repoContainer.TransactionRepository.GetTransactionsByClientID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	responseDTO := dtos.ConvertToGetClientTransactionsReponse(client, transactions)
+
+	return &responseDTO, nil
 }

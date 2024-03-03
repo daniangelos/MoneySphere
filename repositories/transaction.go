@@ -32,7 +32,9 @@ func (tr *TransactionRepository) CreateTransaction(clientID int, value int, tran
 func (tr *TransactionRepository) GetTransactionsByClientID(clientID int) ([]*models.Transaction, error) {
 	transactions := []*models.Transaction{}
 
-	err := tr.dbConn.Find(&transactions).Where("client_id = ?", clientID).Error
+	conn := tr.dbConn.Where("client_id = ?", clientID)
+	conn = conn.Order("created_at DESC")
+	err := conn.Find(&transactions).Error
 
 	return transactions, err
 }

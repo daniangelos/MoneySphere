@@ -11,7 +11,7 @@ CREATE TABLE transactions (
     transaction_value int,
     transaction_type varchar(1),
     transaction_description varchar(10),
-    created_at date,
+    created_at timestamp with time zone,
     PRIMARY KEY (id),
     FOREIGN KEY (client_id) REFERENCES clients(id)
 );
