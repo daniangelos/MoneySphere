@@ -1,7 +1,7 @@
 # server.yaml
 
 db:
-  host: localhost
+  host: db
   port: 5432
   name: money_sphere
   user: admin
