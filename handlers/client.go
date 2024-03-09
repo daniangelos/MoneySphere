@@ -1,12 +1,15 @@
 package handlers
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
 
+	"github.com/MoneySphere/constants"
 	"github.com/MoneySphere/controllers"
 	"github.com/MoneySphere/dtos"
+	"github.com/MoneySphere/validation"
 	"github.com/gin-gonic/gin"
 )
 
@@ -34,14 +37,33 @@ func (ch *ClientHandler) CreateClientTransaction(c *gin.Context) {
 	var body dtos.TransactionCreateRequest
 
 	if err := c.BindJSON(&body); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	err = validation.Validate(body)
+	if err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			"error": err.Error(),
+		})
 		return
 	}
 
 	transaction, err := ch.clientController.CreateClientTransaction(id, body)
 
 	if err != nil {
+		httpStatusCode := http.StatusInternalServerError
+
+		if errors.Is(err, constants.ErrNotEnoughBalance) {
+			httpStatusCode = http.StatusUnprocessableEntity
+		} else if errors.Is(err, constants.ErrClientNotFound) {
+			httpStatusCode = http.StatusNotFound
+		}
+
 		fmt.Println("client transaction creation error")
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.JSON(httpStatusCode, gin.H{
 			"error": err.Error(),
 		})
 		return
@@ -65,8 +87,14 @@ func (ch *ClientHandler) GetClientTransactions(c *gin.Context) {
 
 	response, err := ch.clientController.GetClientTransactions(id)
 	if err != nil {
+		httpStatusCode := http.StatusInternalServerError
+
+		if errors.Is(err, constants.ErrClientNotFound) {
+			httpStatusCode = http.StatusNotFound
+		}
+
 		fmt.Println("failed to get client transactions")
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.JSON(httpStatusCode, gin.H{
 			"error": err.Error(),
 		})
 		return

@@ -1,6 +1,9 @@
 package repositories
 
 import (
+	"errors"
+
+	"github.com/MoneySphere/constants"
 	"github.com/MoneySphere/models"
 	"gorm.io/gorm"
 )
@@ -19,6 +22,9 @@ func (cr *ClientRepository) GetClientByID(id int) (*models.Client, error) {
 	var client models.Client
 
 	err := cr.dbConn.First(&client, id).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, constants.ErrClientNotFound
+	}
 
 	return &client, err
 }
