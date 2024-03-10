@@ -20,8 +20,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.13"
-          memory: "140MB"
+          cpus: "0.3"
+          memory: "300MB"
 
   api01: &api
     image: daniangelos/moneysphere:latest
@@ -29,11 +29,16 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: "0.55"
+          memory: "115MB"
 
   api02:
     <<: *api 
     hostname: api02
-    
+
   nginx:
     image: nginx:latest
     volumes:
@@ -44,4 +49,8 @@ services:
     ports:
       - "9999:9999" 
     deploy:
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: "20MB"
   
